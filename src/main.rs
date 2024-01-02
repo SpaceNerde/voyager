@@ -1,13 +1,11 @@
 mod ui;
 
-use std::{fs, io, thread};
-use std::time::Duration;
-use crossterm::event::{DisableMouseCapture, EnableMouseCapture};
+use std::{fs, io};
+use crossterm::event::{EnableMouseCapture};
 use crossterm::execute;
-use crossterm::terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen};
+use crossterm::terminal::{enable_raw_mode, EnterAlternateScreen};
 use tui::backend::CrosstermBackend;
 use tui::Terminal;
-use tui::widgets::{Block, Borders};
 
 fn load_all_files(path: &str) {
     for entry in fs::read_dir(path).unwrap() {
@@ -25,7 +23,7 @@ fn main() {
 
     loop {
         terminal.draw(|f| {
-            ui::main_layout(f);
+            ui::main_layout(f, "c");
         }).unwrap();
     }
     // load_all_files("C:\\");
