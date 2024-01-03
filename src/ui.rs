@@ -33,8 +33,8 @@ pub fn main_layout<B: Backend>(f: &mut Frame<B>,input_text: &Vec<char>, data: &D
         .direction(Direction::Horizontal)
         .constraints(
             [
-                Constraint::Percentage(50),
-                Constraint::Percentage(50),
+                Constraint::Percentage(80),
+                Constraint::Percentage(20),
             ].as_ref()
         )
         .split(chunks[1]);
