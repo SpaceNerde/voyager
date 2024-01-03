@@ -1,4 +1,5 @@
 mod ui;
+mod commands;
 
 use std::{fs, io};
 use crossterm::event::{DisableMouseCapture, EnableMouseCapture, KeyCode, KeyEventKind};
@@ -7,6 +8,19 @@ use crossterm::{event, execute};
 use crossterm::terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen};
 use tui::backend::CrosstermBackend;
 use tui::Terminal;
+use tui::widgets::ListItem;
+
+pub struct Data {
+    pub current_folder: String
+}
+
+impl Data {
+    pub fn new() -> Self {
+        Data {
+            current_folder: String::new(),
+        }
+    }
+}
 
 fn load_all_files(path: &str) {
     for entry in fs::read_dir(path).unwrap() {
@@ -22,11 +36,12 @@ fn main() {
     let backend = CrosstermBackend::new(stdout);
     let mut terminal = Terminal::new(backend).unwrap();
 
+    let mut data = Data::new();
     let mut input_text:Vec<char> = Vec::new();
-
+    data.current_folder = "C://".to_string();
     loop {
         terminal.draw(|f| {
-            ui::main_layout(f, "c", &input_text);
+            ui::main_layout(f, "c", &input_text, &data);
         }).unwrap();
 
         if let Key(key) = event::read().unwrap() {
@@ -34,6 +49,10 @@ fn main() {
                 match key.code {
                     KeyCode::Esc => {
                         break;
+                    }
+                    KeyCode::Enter => {
+                        data = commands::command_parser(&input_text, data);
+                        input_text.clear();
                     }
                     KeyCode::Backspace => {
                         input_text.pop();
