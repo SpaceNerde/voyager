@@ -2,7 +2,7 @@ use std::fs;
 use tui::backend::Backend;
 use tui::Frame;
 use tui::layout::{Constraint, Direction, Layout};
-use tui::text::{Span, Spans, Text};
+use tui::text::Spans;
 use tui::widgets::{Block, Borders, List, ListItem, Paragraph};
 use crate::Data;
 

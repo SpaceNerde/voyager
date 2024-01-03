@@ -46,7 +46,7 @@ fn delete_entry(args: &Vec<&str>, data: Data) -> Data {
     }
 }
 
-fn rename_entry(args: &Vec<&str>, mut data: Data) -> Data {
+fn rename_entry(args: &Vec<&str>, data: Data) -> Data {
     rename(data.current_folder.clone() + "/" + args[1], data.current_folder.clone() + "/" + args[2]).unwrap();
     data
 }
