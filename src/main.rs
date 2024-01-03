@@ -62,7 +62,7 @@ fn main() {
         }
 
         terminal.draw(|f| {
-            ui::main_layout(f, "c", &input_text, &data);
+            ui::main_layout(f, &input_text, &data);
         }).unwrap();
     }
     disable_raw_mode().unwrap();

@@ -6,7 +6,7 @@ use tui::text::{Span, Spans, Text};
 use tui::widgets::{Block, Borders, List, ListItem, Paragraph};
 use crate::Data;
 
-pub fn main_layout<B: Backend>(f: &mut Frame<B>, path: &str, input_text: &Vec<char>, data: &Data) {
+pub fn main_layout<B: Backend>(f: &mut Frame<B>,input_text: &Vec<char>, data: &Data) {
     // define areas
     let chunks = Layout::default()
         .direction(Direction::Vertical)
@@ -24,7 +24,8 @@ pub fn main_layout<B: Backend>(f: &mut Frame<B>, path: &str, input_text: &Vec<ch
     let block = Block::default()
         .title("Current Folder")
         .borders(Borders::ALL);
-    let paragraph = Paragraph::new(Spans::from(path)).block(block);
+    let current_folder = data.current_folder.clone();
+    let paragraph = Paragraph::new(Spans::from(current_folder.as_str())).block(block);
     f.render_widget(paragraph, chunks[0]);
 
     // Block to display content inside folder
