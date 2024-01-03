@@ -29,11 +29,26 @@ pub fn main_layout<B: Backend>(f: &mut Frame<B>,input_text: &Vec<char>, data: &D
     f.render_widget(paragraph, chunks[0]);
 
     // Block to display content inside folder
-    let block = Block::default()
+    let content_chunks = Layout::default()
+        .direction(Direction::Horizontal)
+        .constraints(
+            [
+                Constraint::Percentage(50),
+                Constraint::Percentage(50),
+            ].as_ref()
+        )
+        .split(chunks[1]);
+
+    let content_block = Block::default()
         .title("Content")
         .borders(Borders::ALL);
-    let list = List::new(load_folder(&data)).block(block);
-    f.render_widget(list, chunks[1]);
+    let list = List::new(load_folder(&data)).block(content_block);
+    f.render_widget(list, content_chunks[0]);
+
+    let help_block =Block::default()
+        .title("Commands")
+        .borders(Borders::ALL);
+    f.render_widget(help_block, content_chunks[1]);
 
     // Input field
     let block = Block::default()
