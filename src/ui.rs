@@ -2,7 +2,7 @@ use std::fs;
 use tui::backend::Backend;
 use tui::Frame;
 use tui::layout::{Constraint, Direction, Layout};
-use tui::text::Spans;
+use tui::text::{Span, Spans};
 use tui::widgets::{Block, Borders, List, ListItem, Paragraph};
 use crate::Data;
 
@@ -33,25 +33,33 @@ pub fn main_layout<B: Backend>(f: &mut Frame<B>,input_text: &Vec<char>, data: &D
         .direction(Direction::Horizontal)
         .constraints(
             [
-                Constraint::Percentage(80),
-                Constraint::Percentage(20),
+                Constraint::Percentage(60),
+                Constraint::Percentage(40),
             ].as_ref()
         )
         .split(chunks[1]);
 
-    let content_block = Block::default()
+    let content_block= Block::default()
         .title("Content")
         .borders(Borders::ALL);
     let list = List::new(load_folder(&data)).block(content_block);
     f.render_widget(list, content_chunks[0]);
 
-    let help_block =Block::default()
+    let help_block= Block::default()
         .title("Commands")
         .borders(Borders::ALL);
-    f.render_widget(help_block, content_chunks[1]);
+    let list = List::new([
+        ListItem::new(Span::from("d - Directory / f - File")),
+        ListItem::new(Span::from("")),
+        ListItem::new(Span::from("l [path]: Load folder")),
+        ListItem::new(Span::from("r [old name] [new name]: Rename Folder or File")),
+        ListItem::new(Span::from("c [f/d] [name]: Creates Folder or File ")),
+        ListItem::new(Span::from("del [f/d] [name]: Deletes Folder or File")),
+    ]).block(help_block);
+    f.render_widget(list, content_chunks[1]);
 
     // Input field
-    let block = Block::default()
+    let block= Block::default()
         .title("Command Line")
         .borders(Borders::ALL);
     let paragraph = Paragraph::new(input_text.iter().cloned().collect::<String>()).block(block);
