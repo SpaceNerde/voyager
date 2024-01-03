@@ -1,11 +1,14 @@
+use std::fs;
 use tui::backend::Backend;
 use tui::Frame;
 use tui::layout::{Constraint, Direction, Layout};
-use tui::widgets::{Block, Borders};
+use tui::text::{Span, Spans, Text};
+use tui::widgets::{Block, Borders, List, ListItem, Paragraph};
+use crate::Data;
 
-pub fn main_layout<B: Backend>(f: &mut Frame<B>) {
+pub fn main_layout<B: Backend>(f: &mut Frame<B>,input_text: &Vec<char>, data: &Data) {
     // define areas
-    let chunks_left = Layout::default()
+    let chunks = Layout::default()
         .direction(Direction::Vertical)
         .constraints(
             [
@@ -17,19 +20,35 @@ pub fn main_layout<B: Backend>(f: &mut Frame<B>) {
         .split(f.size());
 
     // config widgets
-    let block_1 = Block::default()
+    // Block to display what folder you are in
+    let block = Block::default()
         .title("Current Folder")
         .borders(Borders::ALL);
+    let current_folder = data.current_folder.clone();
+    let paragraph = Paragraph::new(Spans::from(current_folder.as_str())).block(block);
+    f.render_widget(paragraph, chunks[0]);
 
-    let block_2 = Block::default()
+    // Block to display content inside folder
+    let block = Block::default()
         .title("Content")
         .borders(Borders::ALL);
+    let list = List::new(load_folder(&data)).block(block);
+    f.render_widget(list, chunks[1]);
 
-    let block_3 = Block::default()
+    // Input field
+    let block = Block::default()
         .title("Command Line")
         .borders(Borders::ALL);
+    let paragraph = Paragraph::new(input_text.iter().cloned().collect::<String>()).block(block);
+    f.render_widget(paragraph, chunks[2]);
+}
 
-    f.render_widget(block_1, chunks_left[0]);
-    f.render_widget(block_2, chunks_left[1]);
-    f.render_widget(block_3, chunks_left[2]);
+fn load_folder(data: &Data) -> Vec<ListItem> {
+    let mut list_items: Vec<ListItem> = Vec::new();
+    for entry in fs::read_dir(&data.current_folder).unwrap() {
+        let item = entry.unwrap();
+        let file_name: Option<String> = item.file_name().to_str().map(|s| s.to_string());
+        list_items.push(ListItem::new(file_name.unwrap()));
+    }
+    list_items
 }
