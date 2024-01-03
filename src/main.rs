@@ -40,10 +40,6 @@ fn main() {
     let mut input_text:Vec<char> = Vec::new();
     data.current_folder = "C://".to_string();
     loop {
-        terminal.draw(|f| {
-            ui::main_layout(f, "c", &input_text, &data);
-        }).unwrap();
-
         if let Key(key) = event::read().unwrap() {
             if key.kind == KeyEventKind::Press {
                 match key.code {
@@ -64,6 +60,10 @@ fn main() {
                 }
             }
         }
+
+        terminal.draw(|f| {
+            ui::main_layout(f, "c", &input_text, &data);
+        }).unwrap();
     }
     disable_raw_mode().unwrap();
     execute!(
