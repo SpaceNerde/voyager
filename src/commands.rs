@@ -1,4 +1,4 @@
-use std::fs::{remove_dir, remove_file};
+use std::fs::{remove_dir, remove_file, rename};
 use crate::Data;
 
 pub fn command_parser(input: &Vec<char>, data: Data) -> Data{
@@ -15,6 +15,9 @@ pub fn command_parser(input: &Vec<char>, data: Data) -> Data{
         },
         "del" => {
             delete_entry(&args, data)
+        },
+        "r" => {
+            rename_entry(&args, data)
         },
         _ => {
             placeholder();
@@ -43,6 +46,11 @@ fn delete_entry(args: &Vec<&str>, data: Data) -> Data {
         }
     }
 
+}
+
+fn rename_entry(args: &Vec<&str>, mut data: Data) -> Data {
+    rename(data.current_folder.clone() + "/" + args[1], data.current_folder.clone() + "/" + args[2]).unwrap();
+    data
 }
 
 fn placeholder() {}
