@@ -1,5 +1,6 @@
 mod ui;
 mod commands;
+mod widgets;
 
 use std::io;
 use crossterm::event::{DisableMouseCapture, EnableMouseCapture, KeyCode, KeyEventKind};
@@ -9,14 +10,22 @@ use crossterm::terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScree
 use ratatui::backend::CrosstermBackend;
 use ratatui::Terminal;
 
+pub enum PopupState {
+    Closed,
+    OptionPopup,
+    TextPopup
+}
+
 pub struct Data {
-    pub current_folder: String
+    pub current_folder: String,
+    pub popup_state: PopupState
 }
 
 impl Data {
     pub fn new() -> Self {
         Data {
             current_folder: String::new(),
+            popup_state: PopupState::Closed,
         }
     }
 }
@@ -36,8 +45,19 @@ fn main() {
             if key.kind == KeyEventKind::Press {
                 match key.code {
                     KeyCode::Esc => {
-                        break;
+                        match data.popup_state {
+                            PopupState::Closed => {
+                                break;
+                            }
+                            PopupState::OptionPopup => {
+                                data.popup_state = PopupState::Closed;
+                            }
+                            PopupState::TextPopup => {
+                                data.popup_state = PopupState::Closed;
+                            }
+                        }
                     }
+                    /*
                     KeyCode::Enter => {
                         data = commands::command_parser(&input_text, data);
                         input_text.clear();
@@ -48,6 +68,16 @@ fn main() {
                     KeyCode::Char(c) => {
                         input_text.push(c);
                     }
+                    */
+                    KeyCode::Char('c') => {
+                        data.popup_state = PopupState::OptionPopup;
+                    },
+                    KeyCode::Char('d') => {
+                        data.popup_state = PopupState::TextPopup;
+                    },
+                    KeyCode::Char('r') => {
+                        data.popup_state = PopupState::TextPopup;
+                    },
                     _ => {}
                 }
             }

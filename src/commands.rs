@@ -12,6 +12,11 @@ use crate::Data;
 
 // errors will pop up
 
+// new code
+
+
+// old code
+
 pub fn command_parser(input: &Vec<char>, data: Data) -> Data {
     let input: String = input.iter().cloned().collect();
     let args: Vec<&str> = input.split_whitespace().collect();

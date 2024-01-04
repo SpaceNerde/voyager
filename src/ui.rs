@@ -1,9 +1,10 @@
 use std::fs;
 use ratatui::Frame;
 use ratatui::layout::{Constraint, Direction, Layout};
+use ratatui::prelude::{Line, Rect};
 use ratatui::text::Span;
-use ratatui::widgets::{Block, Borders, List, ListItem, Paragraph};
-use crate::Data;
+use ratatui::widgets::{Block, Borders, Clear, List, ListItem, Paragraph};
+use crate::{Data, PopupState};
 
 pub fn main_layout(f: &mut Frame,input_text: &Vec<char>, data: &Data) {
     // define areas
@@ -57,6 +58,22 @@ pub fn main_layout(f: &mut Frame,input_text: &Vec<char>, data: &Data) {
     ]).block(help_block);
     f.render_widget(list, content_chunks[1]);
 
+    match data.popup_state {
+        PopupState::Closed => {}
+        PopupState::OptionPopup => {
+            let block = Block::default().title("Popup").borders(Borders::ALL);
+            let area = centered_rect(60, 20, f.size());
+            f.render_widget(Clear, area); //this clears out the background
+            f.render_widget(block, area);
+        }
+        PopupState::TextPopup => {
+            let block = Block::default().title("Popup").borders(Borders::ALL);
+            let area = centered_rect(60, 20, f.size());
+            f.render_widget(Clear, area); //this clears out the background
+            f.render_widget(block, area);
+        }
+    }
+
     // Input field
     let block= Block::default()
         .title("Command Line")
@@ -73,4 +90,24 @@ fn load_folder(data: &Data) -> Vec<ListItem> {
         list_items.push(ListItem::new(file_name.unwrap()));
     }
     list_items
+}
+
+fn centered_rect(percent_x: u16, percent_y: u16, r: Rect) -> Rect {
+    let popup_layout = Layout::default()
+        .direction(Direction::Vertical)
+        .constraints([
+            Constraint::Percentage((100 - percent_y) / 2),
+            Constraint::Percentage(percent_y),
+            Constraint::Percentage((100 - percent_y) / 2),
+        ])
+        .split(r);
+
+    Layout::default()
+        .direction(Direction::Horizontal)
+        .constraints([
+            Constraint::Percentage((100 - percent_x) / 2),
+            Constraint::Percentage(percent_x),
+            Constraint::Percentage((100 - percent_x) / 2),
+        ])
+        .split(popup_layout[1])[1]
 }
