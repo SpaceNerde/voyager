@@ -6,8 +6,8 @@ use crossterm::event::{DisableMouseCapture, EnableMouseCapture, KeyCode, KeyEven
 use crossterm::event::Event::Key;
 use crossterm::{event, execute};
 use crossterm::terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen};
-use tui::backend::CrosstermBackend;
-use tui::Terminal;
+use ratatui::backend::CrosstermBackend;
+use ratatui::Terminal;
 
 pub struct Data {
     pub current_folder: String
