@@ -1,6 +1,17 @@
 use std::fs::{DirBuilder, File, remove_dir, remove_file, rename};
 use std::path::Path;
 use crate::Data;
+
+
+// how to make the command parser?
+// using regex to extract the arguments [command] [args]
+// or maybe
+// no more console and make like a pop up window
+// press c for creating a entity and then like choose between file and folder but with popup windows?
+// choose between and then choose a name
+
+// errors will pop up
+
 pub fn command_parser(input: &Vec<char>, data: Data) -> Data {
     let input: String = input.iter().cloned().collect();
     let args: Vec<&str> = input.split_whitespace().collect();
