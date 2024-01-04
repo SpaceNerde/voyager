@@ -1,28 +1,35 @@
 use std::fs::{DirBuilder, File, remove_dir, remove_file, rename};
 use crate::Data;
-
-pub fn command_parser(input: &Vec<char>, data: Data) -> Data{
+pub fn command_parser(input: &Vec<char>, data: Data) -> Data {
     let input: String = input.iter().cloned().collect();
     let args: Vec<&str> = input.split_whitespace().collect();
 
-    return match args[0] {
-        "c" => {
-            create_entry(&args, data)
-        },
-        "l" => {
-            enter_folder(args[1], data)
-        },
-        "del" => {
-            delete_entry(&args, data)
-        },
-        "r" => {
-            rename_entry(&args, data)
-        },
-        _ => {
-            placeholder();
+    return match args.get(0){
+        Some(arg) => {
+            match arg.trim() {
+                "c" => {
+                    create_entry(&args, data)
+                },
+                "l" => {
+                    enter_folder(args[1], data)
+                },
+                "del" => {
+                    delete_entry(&args, data)
+                },
+                "r" => {
+                    rename_entry(&args, data)
+                },
+                _ => {
+                    placeholder();
+                    data
+                },
+            }
+        }
+
+        None => {
             data
         },
-    }
+    };
 }
 
 fn enter_folder(path: &str, mut data: Data) -> Data{

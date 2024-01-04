@@ -1,5 +1,4 @@
 use std::fs;
-use ratatui::backend::Backend;
 use ratatui::Frame;
 use ratatui::layout::{Constraint, Direction, Layout};
 use ratatui::text::Span;
