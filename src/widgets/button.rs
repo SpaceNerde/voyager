@@ -9,9 +9,8 @@ pub struct Button<'a> {
 }
 
 pub enum ButtonState {
-    Inactive,
-    Hover,
-    Active,
+    Unselected,
+    Selected,
 }
 
 pub struct ButtonTheme {
@@ -37,7 +36,7 @@ impl<'a> Button<'a> {
         Button {
             label: label.into(),
             theme: DARK_BLUE_BUTTON,
-            state: ButtonState::Inactive,
+            state: ButtonState::Unselected,
         }
     }
 
@@ -54,9 +53,8 @@ impl<'a> Button<'a> {
     fn colors(&self) -> (Color, Color) {
         let theme = &self.theme;
         match self.state {
-            ButtonState::Inactive => (theme.text, theme.bg),
-            ButtonState::Hover => (theme.text, theme.hover),
-            ButtonState::Active => (theme.text, theme.hover),
+            ButtonState::Unselected => (theme.text, theme.bg),
+            ButtonState::Selected => (theme.text, theme.hover),
         }
     }
 }

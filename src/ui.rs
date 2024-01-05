@@ -80,8 +80,23 @@ pub fn main_layout(f: &mut Frame,input_text: &Vec<char>, data: &Data) {
             f.render_widget(Clear, area); //this clears out the background
             f.render_widget(popup, area);
 
-            let button_1 = Button::new("Test 1").theme(DARK_BLUE_BUTTON);
-            let button_2 = Button::new("Test 2").theme(DARK_BLUE_BUTTON);
+            let mut button_1 = Button::new("Test 1").theme(DARK_BLUE_BUTTON);
+            let mut button_2 = Button::new("Test 2").theme(DARK_BLUE_BUTTON);
+
+            match data.select_index {
+                0 => {
+                    button_2 = button_2.state(ButtonState::Unselected);
+                    button_1 = button_1.state(ButtonState::Selected);
+                }
+                1 => {
+                    button_1 = button_1.state(ButtonState::Unselected);
+                    button_2 = button_2.state(ButtonState::Selected);
+                }
+                _ => {
+                    eprintln!("YOU BROKE IT HOW THE FUCK DID YOU BREAK THIS?!?!?!?!??!")
+                }
+            }
+
 
             f.render_widget(button_1, split_area[0]);
             f.render_widget(button_2, split_area[1]);

@@ -18,7 +18,8 @@ pub enum PopupState {
 
 pub struct Data {
     pub current_folder: String,
-    pub popup_state: PopupState
+    pub popup_state: PopupState,
+    pub select_index: i8,
 }
 
 impl Data {
@@ -26,6 +27,7 @@ impl Data {
         Data {
             current_folder: String::new(),
             popup_state: PopupState::Closed,
+            select_index: 0,
         }
     }
 }
@@ -71,6 +73,12 @@ fn main() {
                             }
                             KeyCode::Enter => {
                                 // TODO: Enter next state
+                            }
+                            KeyCode::Left => {
+                                data.select_index = 0;
+                            }
+                            KeyCode::Right => {
+                                data.select_index = 1;
                             }
                             _ => {}
                         }
