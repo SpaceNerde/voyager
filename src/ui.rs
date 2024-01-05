@@ -3,9 +3,10 @@ use ratatui::Frame;
 use ratatui::layout::{Constraint, Direction, Layout};
 use ratatui::prelude::{Line, Rect};
 use ratatui::text::Span;
-use ratatui::widgets::{Block, Borders, Clear, List, ListItem, Paragraph};
+use ratatui::widgets::{Block, Borders, Clear, List, ListItem, Paragraph, Widget};
 use crate::{Data, PopupState};
 use crate::widgets::button::*;
+use crate::widgets::popup_select::*;
 
 pub fn main_layout(f: &mut Frame,input_text: &Vec<char>, data: &Data) {
     // define areas
@@ -62,11 +63,12 @@ pub fn main_layout(f: &mut Frame,input_text: &Vec<char>, data: &Data) {
     match data.popup_state {
         PopupState::Closed => {}
         PopupState::OptionPopup => {
-            let block = Block::default().title("Popup").borders(Borders::ALL);
             let area = centered_rect(60, 20, f.size());
-            let button = Button::new("Test Button").theme(DARK_BLUE_BUTTON);
+
+            let popup = PopupSelect::new().theme(DARK_BLUE_POPUP_SELECT);
+
             f.render_widget(Clear, area); //this clears out the background
-            f.render_widget(button, area);
+            f.render_widget(popup, area);
         }
         PopupState::TextPopup => {
             let block = Block::default().title("Popup").borders(Borders::ALL);

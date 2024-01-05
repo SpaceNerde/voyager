@@ -4,29 +4,29 @@ use crate::widgets::colors::*;
 
 pub struct Button<'a> {
     label: Line<'a>,
-    theme: Theme,
-    state: State,
+    theme: ButtonTheme,
+    state: ButtonState,
 }
 
-pub enum State {
+pub enum ButtonState {
     Inactive,
     Hover,
     Active,
 }
 
-pub struct Theme {
+pub struct ButtonTheme {
     text: Color,
     bg: Color,
     hover: Color,
 }
 
-pub const DARK_BLUE_BUTTON: Theme = Theme {
+pub const DARK_BLUE_BUTTON: ButtonTheme = ButtonTheme {
     text: COLOR_1_3,
     bg: COLOR_1_1,
     hover: COLOR_1_2,
 };
 
-pub const DARK_GREEN_BUTTON: Theme = Theme {
+pub const DARK_GREEN_BUTTON: ButtonTheme = ButtonTheme {
     text: COLOR_2_3,
     bg: COLOR_2_1,
     hover: COLOR_2_2,
@@ -37,16 +37,16 @@ impl<'a> Button<'a> {
         Button {
             label: label.into(),
             theme: DARK_BLUE_BUTTON,
-            state: State::Inactive,
+            state: ButtonState::Inactive,
         }
     }
 
-    pub fn theme(mut self, theme: Theme) -> Button<'a> {
+    pub fn theme(mut self, theme: ButtonTheme) -> Button<'a> {
         self.theme = theme;
         self
     }
 
-    pub fn state(mut self, state: State) -> Button<'a> {
+    pub fn state(mut self, state: ButtonState) -> Button<'a> {
         self.state = state;
         self
     }
@@ -54,11 +54,10 @@ impl<'a> Button<'a> {
     fn colors(&self) -> (Color, Color) {
         let theme = &self.theme;
         match self.state {
-            State::Inactive => (theme.text, theme.bg),
-            State::Hover => (theme.text, theme.hover),
-            State::Active => (theme.text, theme.hover),
+            ButtonState::Inactive => (theme.text, theme.bg),
+            ButtonState::Hover => (theme.text, theme.hover),
+            ButtonState::Active => (theme.text, theme.hover),
         }
-
     }
 }
 

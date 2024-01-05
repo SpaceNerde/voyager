@@ -78,6 +78,9 @@ fn main() {
                     KeyCode::Char('r') => {
                         data.popup_state = PopupState::TextPopup;
                     },
+                    KeyCode::Char('l') => {
+                        data.popup_state = PopupState::TextPopup;
+                    },
                     _ => {}
                 }
             }
