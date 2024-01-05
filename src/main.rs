@@ -2,12 +2,15 @@ mod ui;
 mod commands;
 mod widgets;
 
-use std::io;
+use std::{env, io};
 use crossterm::event::{DisableMouseCapture, EnableMouseCapture, Event, KeyCode, KeyEvent, KeyEventKind};
 use crossterm::{event, execute};
 use crossterm::terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen};
 use ratatui::backend::CrosstermBackend;
 use ratatui::Terminal;
+use crate::commands::button_select;
+use crate::EntryKind::Pending;
+use crate::Task::{Create, Delete, Load, Rename};
 
 pub enum PopupState {
     Closed,
@@ -15,18 +18,35 @@ pub enum PopupState {
     TextPopup
 }
 
+pub enum EntryKind {
+    Pending,
+    File,
+    Directory,
+}
+
+pub enum Task {
+    Idle,
+    Delete,
+    Create(EntryKind),
+    Load,
+    Rename,
+}
+
 pub struct Data {
-    pub current_folder: String,
     pub popup_state: PopupState,
     pub select_index: i8,
+    pub input_text: Vec<char>,
+    pub task: Task,
 }
 
 impl Data {
     pub fn new() -> Self {
         Data {
-            current_folder: String::new(),
             popup_state: PopupState::Closed,
+            // TODO: instead of using an index use an enum
             select_index: 0,
+            input_text: vec![],
+            task: Task::Idle,
         }
     }
 }
@@ -39,8 +59,6 @@ fn main() {
     let mut terminal = Terminal::new(backend).unwrap();
 
     let mut data = Data::new();
-    let mut input_text:Vec<char> = Vec::new();
-    data.current_folder = "C://".to_string();
 
     loop {
         match event::read().unwrap() {
@@ -64,15 +82,19 @@ fn main() {
                             }
                             char('c') => {
                                 data.popup_state = PopupState::OptionPopup;
+                                data.task = Create(Pending);
                             }
                             char('d') => {
                                 data.popup_state = PopupState::TextPopup;
+                                data.task = Delete;
                             }
                             char('r') => {
                                 data.popup_state = PopupState::TextPopup;
+                                data.task = Rename;
                             }
                             char('l') => {
                                 data.popup_state = PopupState::TextPopup;
+                                data.task = Load;
                             }
                             _ => {}
                         }
@@ -83,7 +105,7 @@ fn main() {
                                 data.popup_state = PopupState::Closed;
                             }
                             key::Enter => {
-                                // TODO: Enter next state
+                                data = button_select(data);
                             }
                             key::Left => {
                                 data.select_index = 0;
@@ -100,7 +122,13 @@ fn main() {
                                 data.popup_state = PopupState::Closed;
                             }
                             key::Enter => {
-                                // TODO: Enter next state
+                                data.input_text.clear();
+                            }
+                            key::Backspace => {
+                                data.input_text.pop();
+                            }
+                            char(c) => {
+                                data.input_text.push(c);
                             }
                             _ => {}
                         }
@@ -118,7 +146,7 @@ fn main() {
         }
         */
         terminal.draw(|f| {
-            ui::main_layout(f, &input_text, &data);
+            ui::main_layout(f, &data);
         }).unwrap();
     }
     disable_raw_mode().unwrap();

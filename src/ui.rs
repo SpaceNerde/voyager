@@ -1,4 +1,4 @@
-use std::fs;
+use std::{env, fs};
 use ratatui::Frame;
 use ratatui::layout::{Constraint, Direction, Layout};
 use ratatui::prelude::Rect;
@@ -8,15 +8,14 @@ use crate::{Data, PopupState};
 use crate::widgets::button::*;
 use crate::widgets::popup_select::*;
 
-pub fn main_layout(f: &mut Frame,input_text: &Vec<char>, data: &Data) {
+pub fn main_layout(f: &mut Frame, data: &Data) {
     // define areas
     let chunks = Layout::default()
         .direction(Direction::Vertical)
         .constraints(
             [
                 Constraint::Percentage(10),
-                Constraint::Percentage(80),
-                Constraint::Percentage(10),
+                Constraint::Percentage(90),
             ].as_ref()
         )
         .split(f.size());
@@ -26,8 +25,7 @@ pub fn main_layout(f: &mut Frame,input_text: &Vec<char>, data: &Data) {
     let block = Block::default()
         .title("Current Folder")
         .borders(Borders::ALL);
-    let current_folder = data.current_folder.clone();
-    let paragraph = Paragraph::new(Span::from(current_folder.as_str())).block(block);
+    let paragraph = Paragraph::new(Span::from(format!("{}", env::current_dir().unwrap().display()))).block(block);
     f.render_widget(paragraph, chunks[0]);
 
     // Block to display content inside folder
@@ -44,7 +42,7 @@ pub fn main_layout(f: &mut Frame,input_text: &Vec<char>, data: &Data) {
     let content_block= Block::default()
         .title("Content")
         .borders(Borders::ALL);
-    let list = List::new(load_folder(&data)).block(content_block);
+    let list = List::new(load_folder()).block(content_block);
     f.render_widget(list, content_chunks[0]);
 
     let help_block= Block::default()
@@ -80,8 +78,8 @@ pub fn main_layout(f: &mut Frame,input_text: &Vec<char>, data: &Data) {
             f.render_widget(Clear, area); //this clears out the background
             f.render_widget(popup, area);
 
-            let mut button_1 = Button::new("Test 1").theme(DARK_BLUE_BUTTON);
-            let mut button_2 = Button::new("Test 2").theme(DARK_BLUE_BUTTON);
+            let mut button_1 = Button::new("File").theme(DARK_BLUE_BUTTON);
+            let mut button_2 = Button::new("Directory").theme(DARK_BLUE_BUTTON);
 
             match data.select_index {
                 0 => {
@@ -101,24 +99,20 @@ pub fn main_layout(f: &mut Frame,input_text: &Vec<char>, data: &Data) {
             f.render_widget(button_2, split_area[1]);
         }
         PopupState::TextPopup => {
-            let block = Block::default().title("Popup").borders(Borders::ALL);
             let area = centered_rect(60, 20, f.size());
+            let popup = PopupSelect::new().theme(DARK_BLUE_POPUP_SELECT);
+            let paragraph = Paragraph::new(data.input_text.iter().cloned().collect::<String>());
+
             f.render_widget(Clear, area); //this clears out the background
-            f.render_widget(block, area);
+            f.render_widget(popup, area);
+            f.render_widget(paragraph, area);
         }
     }
-
-    // Input field
-    let block= Block::default()
-        .title("Command Line")
-        .borders(Borders::ALL);
-    let paragraph = Paragraph::new(input_text.iter().cloned().collect::<String>()).block(block);
-    f.render_widget(paragraph, chunks[2]);
 }
 
-fn load_folder(data: &Data) -> Vec<ListItem> {
+fn load_folder() -> Vec<ListItem> {
     let mut list_items: Vec<ListItem> = Vec::new();
-    for entry in fs::read_dir(&data.current_folder).unwrap() {
+    for entry in fs::read_dir(env::current_dir().unwrap()).unwrap() {
         let item = entry.unwrap();
         let file_name: Option<String> = item.file_name().to_str().map(|s| s.to_string());
         list_items.push(ListItem::new(file_name.unwrap()));

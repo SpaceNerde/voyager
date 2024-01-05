@@ -1,6 +1,6 @@
 use std::fs::{DirBuilder, File, remove_dir, remove_file, rename};
 use std::path::Path;
-use crate::Data;
+use crate::{Data, EntryKind, PopupState, Task};
 
 
 // how to make the command parser?
@@ -14,9 +14,36 @@ use crate::Data;
 
 // new code
 
+pub fn button_select(mut data: Data) -> Data {
+    match data.select_index {
+        0 => {
+            data.popup_state = PopupState::TextPopup;
+            match &mut data.task {
+                Task::Create(entry_type) => {
+                    *entry_type = EntryKind::File
+                }
+                _ => {}
+            }
+        }
+        1 => {
+            data.popup_state = PopupState::TextPopup;
+            match &mut data.task {
+                Task::Create(entry_type) => {
+                    *entry_type = EntryKind::Directory
+                }
+                _ => {}
+            }
+            data.select_index = 0;
+        }
+        _ => {
+            eprintln!("YOU BROKE IT HOW THE FUCK DID YOU BREAK THIS?!?!?!?!??!");
+        }
+    }
+    data
+}
 
 // old code
-
+/*
 pub fn command_parser(input: &Vec<char>, data: Data) -> Data {
     let input: String = input.iter().cloned().collect();
     let args: Vec<&str> = input.split_whitespace().collect();
@@ -129,3 +156,4 @@ fn create_entry(args: &Vec<&str>, data: Data) -> Data {
 }
 
 fn placeholder() {}
+*/
