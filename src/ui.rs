@@ -64,11 +64,27 @@ pub fn main_layout(f: &mut Frame,input_text: &Vec<char>, data: &Data) {
         PopupState::Closed => {}
         PopupState::OptionPopup => {
             let area = centered_rect(60, 20, f.size());
+            let split_area = Layout::default()
+                .direction(Direction::Horizontal)
+                .constraints(
+                    [
+                        Constraint::Percentage(50),
+                        Constraint::Percentage(50),
+                    ].as_ref()
+                ).split(area);
+
+            // TODO: Add margin and make buttons appendable with popup widget without this mess
 
             let popup = PopupSelect::new().theme(DARK_BLUE_POPUP_SELECT);
 
             f.render_widget(Clear, area); //this clears out the background
             f.render_widget(popup, area);
+
+            let button_1 = Button::new("Test 1").theme(DARK_BLUE_BUTTON);
+            let button_2 = Button::new("Test 2").theme(DARK_BLUE_BUTTON);
+
+            f.render_widget(button_1, split_area[0]);
+            f.render_widget(button_2, split_area[1]);
         }
         PopupState::TextPopup => {
             let block = Block::default().title("Popup").borders(Borders::ALL);
