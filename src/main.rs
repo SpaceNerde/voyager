@@ -4,7 +4,6 @@ mod widgets;
 
 use std::io;
 use crossterm::event::{DisableMouseCapture, EnableMouseCapture, Event, KeyCode, KeyEvent, KeyEventKind};
-use crossterm::event::Event::Key;
 use crossterm::{event, execute};
 use crossterm::terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen};
 use ratatui::backend::CrosstermBackend;
@@ -52,6 +51,10 @@ fn main() {
             }) => {
                 use KeyCode as key;
                 use KeyCode::Char as char;
+
+                if kind != KeyEventKind::Press {
+                    continue;
+                }
 
                 match data.popup_state {
                     PopupState::Closed => {
