@@ -1,9 +1,9 @@
 use std::fs;
 use ratatui::Frame;
 use ratatui::layout::{Constraint, Direction, Layout};
-use ratatui::prelude::{Line, Rect};
+use ratatui::prelude::Rect;
 use ratatui::text::Span;
-use ratatui::widgets::{Block, Borders, Clear, List, ListItem, Paragraph, Widget};
+use ratatui::widgets::{Block, Borders, Clear, List, ListItem, Paragraph};
 use crate::{Data, PopupState};
 use crate::widgets::button::*;
 use crate::widgets::popup_select::*;
@@ -96,7 +96,6 @@ pub fn main_layout(f: &mut Frame,input_text: &Vec<char>, data: &Data) {
                     eprintln!("YOU BROKE IT HOW THE FUCK DID YOU BREAK THIS?!?!?!?!??!")
                 }
             }
-
 
             f.render_widget(button_1, split_area[0]);
             f.render_widget(button_2, split_area[1]);

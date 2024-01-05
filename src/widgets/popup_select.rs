@@ -2,7 +2,6 @@ use ratatui::buffer::Buffer;
 use ratatui::layout::Rect;
 use ratatui::prelude::{Color, Style};
 use ratatui::widgets::Widget;
-use crate::widgets::button::{Button, ButtonState};
 use crate::widgets::colors::*;
 
 pub struct PopupSelect {
@@ -44,7 +43,7 @@ impl PopupSelect {
 
 impl Widget for PopupSelect {
     fn render(self, area: Rect, buf: &mut Buffer) {
-        let (text, bg) = self.colors();
+        let (_text, bg) = self.colors();
         buf.set_style(area, Style::new().bg(bg));
     }
 }
