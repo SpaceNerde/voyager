@@ -3,7 +3,7 @@ mod commands;
 mod widgets;
 
 use std::io;
-use crossterm::event::{DisableMouseCapture, EnableMouseCapture, KeyCode, KeyEventKind};
+use crossterm::event::{DisableMouseCapture, EnableMouseCapture, Event, KeyCode, KeyEvent, KeyEventKind};
 use crossterm::event::Event::Key;
 use crossterm::{event, execute};
 use crossterm::terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen};
@@ -42,70 +42,78 @@ fn main() {
     let mut data = Data::new();
     let mut input_text:Vec<char> = Vec::new();
     data.current_folder = "C://".to_string();
+
     loop {
-        if let Key(key) = event::read().unwrap() {
-            if key.kind == KeyEventKind::Press {
+        match event::read().unwrap() {
+            Event::Key(KeyEvent {
+                kind,
+                code,
+                ..
+            }) => {
+                use KeyCode as key;
+                use KeyCode::Char as char;
+
                 match data.popup_state {
                     PopupState::Closed => {
-                        match key.code {
-                            KeyCode::Esc => {
+                        match code {
+                            key::Esc => {
                                 break;
                             }
-                            KeyCode::Char('c') => {
+                            char('c') => {
                                 data.popup_state = PopupState::OptionPopup;
                             }
-                            KeyCode::Char('d') => {
+                            char('d') => {
                                 data.popup_state = PopupState::TextPopup;
                             }
-                            KeyCode::Char('r') => {
+                            char('r') => {
                                 data.popup_state = PopupState::TextPopup;
                             }
-                            KeyCode::Char('l') => {
+                            char('l') => {
                                 data.popup_state = PopupState::TextPopup;
                             }
                             _ => {}
                         }
                     }
                     PopupState::OptionPopup => {
-                        match key.code {
-                            KeyCode::Esc => {
+                        match code {
+                            key::Esc => {
                                 data.popup_state = PopupState::Closed;
                             }
-                            KeyCode::Enter => {
+                            key::Enter => {
                                 // TODO: Enter next state
                             }
-                            KeyCode::Left => {
+                            key::Left => {
                                 data.select_index = 0;
                             }
-                            KeyCode::Right => {
+                            key::Right => {
                                 data.select_index = 1;
                             }
                             _ => {}
                         }
                     }
                     PopupState::TextPopup => {
-                        match key.code {
-                            KeyCode::Esc => {
+                        match code {
+                            key::Esc => {
                                 data.popup_state = PopupState::Closed;
                             }
-                            KeyCode::Enter => {
+                            key::Enter => {
                                 // TODO: Enter next state
                             }
                             _ => {}
                         }
                     }
                 }
-                /*
-                KeyCode::Backspace => {
-                    input_text.pop();
-                }
-                KeyCode::Char(c) => {
-                    input_text.push(c);
-                }
-                */
             }
+            _ => {}
+        };
+        /*
+        KeyCode::Backspace => {
+            input_text.pop();
         }
-
+        KeyCode::Char(c) => {
+            input_text.push(c);
+        }
+        */
         terminal.draw(|f| {
             ui::main_layout(f, &input_text, &data);
         }).unwrap();
@@ -120,4 +128,3 @@ fn main() {
 
     terminal.clear().unwrap();
 }
-
