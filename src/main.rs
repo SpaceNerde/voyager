@@ -43,46 +43,58 @@ fn main() {
     loop {
         if let Key(key) = event::read().unwrap() {
             if key.kind == KeyEventKind::Press {
-                match key.code {
-                    KeyCode::Esc => {
-                        match data.popup_state {
-                            PopupState::Closed => {
+                match data.popup_state {
+                    PopupState::Closed => {
+                        match key.code {
+                            KeyCode::Esc => {
                                 break;
                             }
-                            PopupState::OptionPopup => {
-                                data.popup_state = PopupState::Closed;
+                            KeyCode::Char('c') => {
+                                data.popup_state = PopupState::OptionPopup;
                             }
-                            PopupState::TextPopup => {
-                                data.popup_state = PopupState::Closed;
+                            KeyCode::Char('d') => {
+                                data.popup_state = PopupState::TextPopup;
                             }
+                            KeyCode::Char('r') => {
+                                data.popup_state = PopupState::TextPopup;
+                            }
+                            KeyCode::Char('l') => {
+                                data.popup_state = PopupState::TextPopup;
+                            }
+                            _ => {}
                         }
                     }
-                    /*
-                    KeyCode::Enter => {
-                        data = commands::command_parser(&input_text, data);
-                        input_text.clear();
+                    PopupState::OptionPopup => {
+                        match key.code {
+                            KeyCode::Esc => {
+                                data.popup_state = PopupState::Closed;
+                            }
+                            KeyCode::Enter => {
+                                // TODO: Enter next state
+                            }
+                            _ => {}
+                        }
                     }
-                    KeyCode::Backspace => {
-                        input_text.pop();
+                    PopupState::TextPopup => {
+                        match key.code {
+                            KeyCode::Esc => {
+                                data.popup_state = PopupState::Closed;
+                            }
+                            KeyCode::Enter => {
+                                // TODO: Enter next state
+                            }
+                            _ => {}
+                        }
                     }
-                    KeyCode::Char(c) => {
-                        input_text.push(c);
-                    }
-                    */
-                    KeyCode::Char('c') => {
-                        data.popup_state = PopupState::OptionPopup;
-                    },
-                    KeyCode::Char('d') => {
-                        data.popup_state = PopupState::TextPopup;
-                    },
-                    KeyCode::Char('r') => {
-                        data.popup_state = PopupState::TextPopup;
-                    },
-                    KeyCode::Char('l') => {
-                        data.popup_state = PopupState::TextPopup;
-                    },
-                    _ => {}
                 }
+                /*
+                KeyCode::Backspace => {
+                    input_text.pop();
+                }
+                KeyCode::Char(c) => {
+                    input_text.push(c);
+                }
+                */
             }
         }
 
