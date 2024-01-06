@@ -5,6 +5,7 @@ use ratatui::prelude::Rect;
 use ratatui::text::Span;
 use ratatui::widgets::{Block, Borders, Clear, List, ListItem, Paragraph};
 use crate::{Data, PopupState};
+use crate::themes::dark_blue::DARK_BLUE_THEME;
 use crate::widgets::button::*;
 use crate::widgets::popup_select::*;
 
@@ -73,13 +74,13 @@ pub fn main_layout(f: &mut Frame, data: &Data) {
 
             // TODO: Add margin and make buttons appendable with popup widget without this mess
 
-            let popup = PopupSelect::new().theme(DARK_BLUE_POPUP_SELECT);
+            let popup = PopupSelect::new().theme(DARK_BLUE_THEME);
 
             f.render_widget(Clear, area); //this clears out the background
             f.render_widget(popup, area);
 
-            let mut button_1 = Button::new("File").theme(DARK_BLUE_BUTTON);
-            let mut button_2 = Button::new("Directory").theme(DARK_BLUE_BUTTON);
+            let mut button_1 = Button::new("File").theme(DARK_BLUE_THEME);
+            let mut button_2 = Button::new("Directory").theme(DARK_BLUE_THEME);
 
             match data.select_index {
                 0 => {
@@ -100,7 +101,7 @@ pub fn main_layout(f: &mut Frame, data: &Data) {
         }
         PopupState::TextPopup => {
             let area = centered_rect(60, 20, f.size());
-            let popup = PopupSelect::new().theme(DARK_BLUE_POPUP_SELECT);
+            let popup = PopupSelect::new().theme(DARK_BLUE_THEME);
             let paragraph = Paragraph::new(data.input_text.iter().cloned().collect::<String>());
 
             f.render_widget(Clear, area); //this clears out the background

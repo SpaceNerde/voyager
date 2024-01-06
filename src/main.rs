@@ -1,6 +1,8 @@
 mod ui;
 mod commands;
 mod widgets;
+mod themes;
+mod theme;
 
 use std::io;
 use crossterm::event::{DisableMouseCapture, EnableMouseCapture, Event, KeyCode, KeyEvent, KeyEventKind};
