@@ -2,7 +2,7 @@ mod ui;
 mod commands;
 mod widgets;
 
-use std::{env, io};
+use std::io;
 use crossterm::event::{DisableMouseCapture, EnableMouseCapture, Event, KeyCode, KeyEvent, KeyEventKind};
 use crossterm::{event, execute};
 use crossterm::terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen};
