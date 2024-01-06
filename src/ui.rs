@@ -110,7 +110,7 @@ pub fn main_layout(f: &mut Frame, data: &Data) {
     }
 }
 
-fn load_folder() -> Vec<ListItem> {
+fn load_folder() -> Vec<ListItem<'static>> {
     let mut list_items: Vec<ListItem> = Vec::new();
     for entry in fs::read_dir(env::current_dir().unwrap()).unwrap() {
         let item = entry.unwrap();

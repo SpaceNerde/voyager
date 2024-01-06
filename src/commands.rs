@@ -1,5 +1,6 @@
+use std::{env, fs};
 use std::fs::{DirBuilder, File, remove_dir, remove_file, rename};
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use crate::{Data, EntryKind, PopupState, Task};
 
 
@@ -40,6 +41,50 @@ pub fn button_select(mut data: Data) -> Data {
         }
     }
     data
+}
+
+pub fn parse_command(data: Data){
+    match data.task {
+        Task::Idle => {}
+        Task::Delete => {
+
+        }
+        Task::Create(ref entry_type) => {
+            match entry_type {
+                EntryKind::Pending => {}
+                EntryKind::File => {
+                    match File::create(get_path(data.clone())) {
+                        Ok(_) => {}
+                        Err(err) => eprintln!("Error creating file: {:?}", err),
+                    }
+                }
+                EntryKind::Directory => {
+                    match DirBuilder::new().recursive(true).create(get_path(data.clone())) {
+                        Ok(_) => {}
+                        Err(_) => {}
+                    }
+                }
+            }
+        }
+        Task::Load => {
+            env::set_current_dir(format!("{}", data.input_text.iter().cloned().collect::<String>())).unwrap();
+        }
+        Task::Rename => {
+            // TODO
+        }
+    }
+}
+
+fn get_path(data: Data) -> PathBuf{
+    let current_dir = env::current_dir().unwrap();
+
+    let input_text_str: String = data.input_text.iter().cloned().collect();
+    let path_buf: Vec<PathBuf> = [current_dir.as_path(), Path::new(&input_text_str)]
+        .iter()
+        .map(|path| PathBuf::from(path))
+        .collect();
+
+    path_buf.iter().fold(PathBuf::new(), |acc, p| acc.join(p))
 }
 
 // old code

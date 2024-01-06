@@ -8,22 +8,22 @@ use crossterm::{event, execute};
 use crossterm::terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen};
 use ratatui::backend::CrosstermBackend;
 use ratatui::Terminal;
-use crate::commands::button_select;
+use crate::commands::{button_select, parse_command};
 use crate::EntryKind::Pending;
 use crate::Task::{Create, Delete, Load, Rename};
-
+#[derive(Clone)]
 pub enum PopupState {
     Closed,
     OptionPopup,
     TextPopup
 }
-
+#[derive(Clone)]
 pub enum EntryKind {
     Pending,
     File,
     Directory,
 }
-
+#[derive(Clone)]
 pub enum Task {
     Idle,
     Delete,
@@ -31,7 +31,7 @@ pub enum Task {
     Load,
     Rename,
 }
-
+#[derive(Clone)]
 pub struct Data {
     pub popup_state: PopupState,
     pub select_index: i8,
@@ -89,7 +89,6 @@ fn main() {
                                 data.task = Delete;
                             }
                             char('r') => {
-                                data.popup_state = PopupState::TextPopup;
                                 data.task = Rename;
                             }
                             char('l') => {
@@ -122,7 +121,9 @@ fn main() {
                                 data.popup_state = PopupState::Closed;
                             }
                             key::Enter => {
+                                parse_command(data.clone());
                                 data.input_text.clear();
+                                data.popup_state = PopupState::Closed;
                             }
                             key::Backspace => {
                                 data.input_text.pop();
@@ -130,6 +131,9 @@ fn main() {
                             char(c) => {
                                 data.input_text.push(c);
                             }
+                            // TODO
+                            key::Left => {}
+                            key::Right => {}
                             _ => {}
                         }
                     }
