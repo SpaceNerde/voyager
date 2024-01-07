@@ -53,12 +53,16 @@ pub fn main_layout(f: &mut Frame, data: &mut Data) {
         .title("Commands")
         .borders(Borders::ALL);
     let list = List::new([
-        ListItem::new(Span::from("d - Directory / f - File")),
-        ListItem::new(Span::from("")),
-        ListItem::new(Span::from("l [path]: Load folder")),
-        ListItem::new(Span::from("r [old name] [new name]: Rename Folder or File")),
-        ListItem::new(Span::from("c [f/d] [name]: Creates Folder or File ")),
-        ListItem::new(Span::from("del [f/d] [name]: Deletes Folder or File")),
+        ListItem::new(Span::from("--Commands--")),
+        ListItem::new(Span::from(" -r rename")),
+        ListItem::new(Span::from(" -d delete")),
+        ListItem::new(Span::from(" -c create")),
+        ListItem::new(Span::from(" -l load")),
+        ListItem::new(Span::from("--Arrow Keys--")),
+        ListItem::new(Span::from(" -Up go up")),
+        ListItem::new(Span::from(" -Down go down")),
+        ListItem::new(Span::from(" -Left go to parent dir")),
+        ListItem::new(Span::from(" -Right go to selected dir")),
     ]).block(help_block);
     f.render_widget(list, content_chunks[1]);
 
