@@ -57,7 +57,7 @@ pub fn parse_command(data: Data){
         Task::Load => {
             env::set_current_dir(format!("{}", data.input_text.iter().cloned().collect::<String>())).unwrap();
         }
-        Task::Rename(from, to) => {
+        Task::Rename(from, _) => {
             let to = data.input_text.iter().cloned().collect::<String>();
             fs::rename(from, to).unwrap();
         }

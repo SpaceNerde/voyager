@@ -4,7 +4,7 @@ mod widgets;
 mod themes;
 mod theme;
 
-use std::{env, fs, io};
+use std::{fs, io};
 use std::env::{current_dir, set_current_dir};
 use std::path::Component::ParentDir;
 use std::path::Path;
@@ -160,10 +160,10 @@ fn main() {
                                 data.items.next();
                             }
                             key::Right => {
-                                env::set_current_dir(Path::join(current_dir().unwrap().as_path(), Path::new(&fs::read_dir(".").unwrap().skip(data.items.state.selected().unwrap()).next().unwrap().unwrap().file_name()))).unwrap();
+                                set_current_dir(Path::join(current_dir().unwrap().as_path(), Path::new(&fs::read_dir(".").unwrap().skip(data.items.state.selected().unwrap()).next().unwrap().unwrap().file_name()))).unwrap();
                             }
                             key::Left => {
-                                env::set_current_dir(ParentDir).unwrap();
+                                set_current_dir(ParentDir).unwrap();
                             }
                             char('c') => {
                                 data.popup_state = PopupState::OptionPopup;
@@ -208,7 +208,7 @@ fn main() {
                             }
                             key::Enter if data.task == Rename(String::new(), String::new()) => {
                                 match &mut data.task {
-                                    Rename(from, to) => {
+                                    Rename(from, _) => {
                                         *from = data.input_text.iter().cloned().collect::<String>();
                                     }
                                     _ => {}
