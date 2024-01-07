@@ -5,6 +5,9 @@ mod themes;
 mod theme;
 
 use std::{env, fs, io};
+use std::env::current_dir;
+use std::path::Component::ParentDir;
+use std::path::Path;
 use std::thread::sleep;
 use crossterm::event::{DisableMouseCapture, EnableMouseCapture, Event, KeyCode, KeyEvent, KeyEventKind};
 use crossterm::{event, execute};
@@ -158,6 +161,12 @@ fn main() {
                             key::Down => {
                                 data.items.next();
                             }
+                            key::Right => {
+                                env::set_current_dir(Path::join(current_dir().unwrap().as_path(), Path::new(&fs::read_dir(".").unwrap().skip(data.items.state.selected().unwrap()).next().unwrap().unwrap().file_name()))).unwrap();
+                            }
+                            key::Left => {
+                                env::set_current_dir(ParentDir).unwrap();
+                            }
                             char('c') => {
                                 data.popup_state = PopupState::OptionPopup;
                                 data.task = Create(Pending);
@@ -242,6 +251,8 @@ fn main() {
 fn load_content(mut data: Data) -> Data{
     data.items.items.clear();
 
+    let mut i = 0;
+
     for entry in fs::read_dir(env::current_dir().unwrap()).unwrap() {
         let item = entry.unwrap().file_name();
         if let Some(item_str) = item.to_str() {
@@ -249,6 +260,7 @@ fn load_content(mut data: Data) -> Data{
             let new_item = ListItem::new(item_string);
             data.items.add_item(new_item);
         }
+        i += 1;
     }
 
     data

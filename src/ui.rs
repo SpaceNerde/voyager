@@ -2,6 +2,7 @@ use std::{env, fs};
 use ratatui::Frame;
 use ratatui::layout::{Constraint, Direction, Layout};
 use ratatui::{prelude::*, widgets::*};
+use ratatui::prelude::Color::White;
 use ratatui::text::Span;
 use ratatui::widgets::{Block, Borders, Clear, List, ListItem, Paragraph};
 use crate::{Data, PopupState};
@@ -44,7 +45,7 @@ pub fn main_layout(f: &mut Frame, data: &mut Data) {
         .title("Content")
         .borders(Borders::ALL);
 
-    let list = List::new(data.items.clone().get_items()).block(content_block);
+    let list = List::new(data.items.clone().get_items()).block(content_block).highlight_style(Style::new().bg(White));
 
     f.render_stateful_widget(list, content_chunks[0], &mut data.items.state);
 
