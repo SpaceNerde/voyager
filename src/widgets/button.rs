@@ -1,10 +1,11 @@
 use ratatui::prelude::*;
 use ratatui::widgets::Widget;
-use crate::widgets::colors::*;
+use crate::theme::Theme;
+use crate::themes::*;
 
 pub struct Button<'a> {
     label: Line<'a>,
-    theme: ButtonTheme,
+    theme: Theme,
     state: ButtonState,
 }
 
@@ -13,34 +14,16 @@ pub enum ButtonState {
     Selected,
 }
 
-pub struct ButtonTheme {
-    text: Color,
-    bg: Color,
-    hover: Color,
-}
-
-pub const DARK_BLUE_BUTTON: ButtonTheme = ButtonTheme {
-    text: COLOR_1_3,
-    bg: COLOR_1_1,
-    hover: COLOR_1_2,
-};
-
-pub const DARK_GREEN_BUTTON: ButtonTheme = ButtonTheme {
-    text: COLOR_2_3,
-    bg: COLOR_2_1,
-    hover: COLOR_2_2,
-};
-
 impl<'a> Button<'a> {
     pub fn new<T: Into<Line<'a>>>(label: T) -> Button<'a> {
         Button {
             label: label.into(),
-            theme: DARK_BLUE_BUTTON,
+            theme: dark_blue::DARK_BLUE_THEME,
             state: ButtonState::Unselected,
         }
     }
 
-    pub fn theme(mut self, theme: ButtonTheme) -> Button<'a> {
+    pub fn theme(mut self, theme: Theme) -> Button<'a> {
         self.theme = theme;
         self
     }
@@ -54,7 +37,7 @@ impl<'a> Button<'a> {
         let theme = &self.theme;
         match self.state {
             ButtonState::Unselected => (theme.text, theme.bg),
-            ButtonState::Selected => (theme.text, theme.hover),
+            ButtonState::Selected => (theme.text, theme.select),
         }
     }
 }

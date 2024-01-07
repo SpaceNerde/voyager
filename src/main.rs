@@ -1,13 +1,19 @@
 mod ui;
 mod commands;
 mod widgets;
+mod themes;
+mod theme;
 
-use std::io;
+use std::{env, fs, io};
+use std::env::current_dir;
+use std::path::Component::ParentDir;
+use std::path::Path;
 use crossterm::event::{DisableMouseCapture, EnableMouseCapture, Event, KeyCode, KeyEvent, KeyEventKind};
 use crossterm::{event, execute};
 use crossterm::terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen};
 use ratatui::backend::CrosstermBackend;
 use ratatui::Terminal;
+use ratatui::widgets::{ListItem, ListState};
 use crate::commands::{button_select, parse_command};
 use crate::EntryKind::Pending;
 use crate::Task::{Create, Delete, Load, Rename};
@@ -31,22 +37,76 @@ pub enum Task {
     Load,
     Rename,
 }
+
 #[derive(Clone)]
-pub struct Data {
-    pub popup_state: PopupState,
-    pub select_index: i8,
-    pub input_text: Vec<char>,
-    pub task: Task,
+pub struct StateList<'a> {
+    state: ListState,
+    items: Vec<ListItem<'a>>,
 }
 
-impl Data {
-    pub fn new() -> Self {
+impl<'a> StateList<'a> {
+    fn new() -> StateList<'a> {
+        StateList {
+            state: ListState::default(),
+            items: vec![],
+        }
+    }
+
+    fn get_items(self) -> Vec<ListItem<'a>> {
+        self.items.to_vec()
+    }
+
+    fn add_item(&mut self, item: ListItem<'a>) {
+        self.items.push(item);
+    }
+
+    fn next(&mut self) {
+        let i = match self.state.selected() {
+            Some(i) => {
+                if i >= self.items.len() - 1{
+                    0
+                } else {
+                    i + 1
+                }
+            }
+            None => 0,
+        };
+        self.state.select(Some(i));
+    }
+
+    fn previous(&mut self) {
+        let i = match self.state.selected() {
+            None => 0,
+            Some(i) => {
+                if i == 0 {
+                    self.items.len() - 1
+                } else {
+                    i - 1
+                }
+            }
+        };
+        self.state.select(Some(i));
+    }
+}
+
+#[derive(Clone)]
+pub struct Data<'a> {
+    pub popup_state: PopupState,
+    pub button_select_index: i8,
+    pub input_text: Vec<char>,
+    pub task: Task,
+    pub items: StateList<'a>,
+}
+
+impl<'a> Data<'a> {
+    pub fn new() -> Data<'a> {
         Data {
             popup_state: PopupState::Closed,
             // TODO: instead of using an index use an enum
-            select_index: 0,
+            button_select_index: 0,
             input_text: vec![],
             task: Task::Idle,
+            items: StateList::new(),
         }
     }
 }
@@ -61,6 +121,16 @@ fn main() {
     let mut data = Data::new();
 
     loop {
+        // content logic
+
+        data = load_content(data);
+
+        // main logic
+
+        terminal.draw(|f| {
+            ui::main_layout(f, &mut data);
+        }).unwrap();
+
         match event::read().unwrap() {
             Event::Key(KeyEvent {
                 kind,
@@ -79,6 +149,18 @@ fn main() {
                         match code {
                             key::Esc => {
                                 break;
+                            }
+                            key::Up => {
+                                data.items.previous();
+                            }
+                            key::Down => {
+                                data.items.next();
+                            }
+                            key::Right => {
+                                env::set_current_dir(Path::join(current_dir().unwrap().as_path(), Path::new(&fs::read_dir(".").unwrap().skip(data.items.state.selected().unwrap()).next().unwrap().unwrap().file_name()))).unwrap();
+                            }
+                            key::Left => {
+                                env::set_current_dir(ParentDir).unwrap();
                             }
                             char('c') => {
                                 data.popup_state = PopupState::OptionPopup;
@@ -107,10 +189,10 @@ fn main() {
                                 data = button_select(data);
                             }
                             key::Left => {
-                                data.select_index = 0;
+                                data.button_select_index = 0;
                             }
                             key::Right => {
-                                data.select_index = 1;
+                                data.button_select_index = 1;
                             }
                             _ => {}
                         }
@@ -141,17 +223,6 @@ fn main() {
             }
             _ => {}
         };
-        /*
-        KeyCode::Backspace => {
-            input_text.pop();
-        }
-        KeyCode::Char(c) => {
-            input_text.push(c);
-        }
-        */
-        terminal.draw(|f| {
-            ui::main_layout(f, &data);
-        }).unwrap();
     }
     disable_raw_mode().unwrap();
     execute!(
@@ -162,4 +233,19 @@ fn main() {
     terminal.show_cursor().unwrap();
 
     terminal.clear().unwrap();
+}
+
+fn load_content(mut data: Data) -> Data{
+    data.items.items.clear();
+
+    for entry in fs::read_dir(current_dir().unwrap()).unwrap() {
+        let item = entry.unwrap().file_name();
+        if let Some(item_str) = item.to_str() {
+            let item_string = item_str.to_string(); // Clone to create an owned String
+            let new_item = ListItem::new(item_string);
+            data.items.add_item(new_item);
+        }
+    }
+
+    data
 }
