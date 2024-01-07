@@ -5,7 +5,7 @@ mod themes;
 mod theme;
 
 use std::{env, fs, io};
-use std::env::current_dir;
+use std::env::{current_dir, set_current_dir};
 use std::path::Component::ParentDir;
 use std::path::Path;
 use crossterm::event::{DisableMouseCapture, EnableMouseCapture, Event, KeyCode, KeyEvent, KeyEventKind};
@@ -17,25 +17,25 @@ use ratatui::widgets::{ListItem, ListState};
 use crate::commands::{button_select, parse_command};
 use crate::EntryKind::Pending;
 use crate::Task::{Create, Delete, Load, Rename};
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub enum PopupState {
     Closed,
     OptionPopup,
     TextPopup
 }
-#[derive(Clone)]
+#[derive(Clone, PartialEq, Debug)]
 pub enum EntryKind {
     Pending,
     File,
     Directory,
 }
-#[derive(Clone)]
+#[derive(Clone, PartialEq, Debug)]
 pub enum Task {
     Idle,
     Delete,
     Create(EntryKind),
     Load,
-    Rename,
+    Rename(String, String),
 }
 
 #[derive(Clone)]
@@ -118,6 +118,9 @@ fn main() {
     let backend = CrosstermBackend::new(stdout);
     let mut terminal = Terminal::new(backend).unwrap();
 
+    // start in starting dir cause well looks better?
+    set_current_dir("/").unwrap();
+
     let mut data = Data::new();
 
     loop {
@@ -171,7 +174,8 @@ fn main() {
                                 data.task = Delete;
                             }
                             char('r') => {
-                                data.task = Rename;
+                                data.popup_state = PopupState::TextPopup;
+                                data.task = Rename(String::new(), String::new());
                             }
                             char('l') => {
                                 data.popup_state = PopupState::TextPopup;
@@ -201,6 +205,15 @@ fn main() {
                         match code {
                             key::Esc => {
                                 data.popup_state = PopupState::Closed;
+                            }
+                            key::Enter if data.task == Rename(String::new(), String::new()) => {
+                                match &mut data.task {
+                                    Rename(from, to) => {
+                                        *from = data.input_text.iter().cloned().collect::<String>();
+                                    }
+                                    _ => {}
+                                }
+                                data.input_text.clear();
                             }
                             key::Enter => {
                                 parse_command(data.clone());

@@ -1,4 +1,4 @@
-use std::env;
+use std::{env, fs};
 use std::fs::{DirBuilder, File};
 use std::path::{Path, PathBuf};
 use crate::{Data, EntryKind, PopupState, Task};
@@ -57,8 +57,9 @@ pub fn parse_command(data: Data){
         Task::Load => {
             env::set_current_dir(format!("{}", data.input_text.iter().cloned().collect::<String>())).unwrap();
         }
-        Task::Rename => {
-            // TODO
+        Task::Rename(from, to) => {
+            let to = data.input_text.iter().cloned().collect::<String>();
+            fs::rename(from, to).unwrap();
         }
     }
 }
