@@ -1,7 +1,7 @@
-use std::{env, fs};
+use std::env;
 use ratatui::Frame;
 use ratatui::layout::{Constraint, Direction, Layout};
-use ratatui::{prelude::*, widgets::*};
+use ratatui::{prelude::*};
 use ratatui::prelude::Color::White;
 use ratatui::text::Span;
 use ratatui::widgets::{Block, Borders, Clear, List, ListItem, Paragraph};
@@ -112,16 +112,6 @@ pub fn main_layout(f: &mut Frame, data: &mut Data) {
             f.render_widget(paragraph, area);
         }
     }
-}
-
-fn load_folder() -> Vec<ListItem<'static>> {
-    let mut list_items: Vec<ListItem> = Vec::new();
-    for entry in fs::read_dir(env::current_dir().unwrap()).unwrap() {
-        let item = entry.unwrap();
-        let file_name: Option<String> = item.file_name().to_str().map(|s| s.to_string());
-        list_items.push(ListItem::new(file_name.unwrap()));
-    }
-    list_items
 }
 
 fn centered_rect(percent_x: u16, percent_y: u16, r: Rect) -> Rect {
