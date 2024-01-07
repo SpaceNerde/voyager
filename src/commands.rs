@@ -4,7 +4,7 @@ use std::path::{Path, PathBuf};
 use crate::{Data, EntryKind, PopupState, Task};
 
 pub fn button_select(mut data: Data) -> Data {
-    match data.select_index {
+    match data.button_select_index {
         0 => {
             data.popup_state = PopupState::TextPopup;
             match &mut data.task {
@@ -22,7 +22,7 @@ pub fn button_select(mut data: Data) -> Data {
                 }
                 _ => {}
             }
-            data.select_index = 0;
+            data.button_select_index = 0;
         }
         _ => {
             eprintln!("YOU BROKE IT HOW THE FUCK DID YOU BREAK THIS?!?!?!?!??!");

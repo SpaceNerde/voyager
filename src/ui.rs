@@ -1,7 +1,7 @@
 use std::{env, fs};
 use ratatui::Frame;
 use ratatui::layout::{Constraint, Direction, Layout};
-use ratatui::prelude::Rect;
+use ratatui::{prelude::*, widgets::*};
 use ratatui::text::Span;
 use ratatui::widgets::{Block, Borders, Clear, List, ListItem, Paragraph};
 use crate::{Data, PopupState};
@@ -9,7 +9,7 @@ use crate::themes::dark_blue::DARK_BLUE_THEME;
 use crate::widgets::button::*;
 use crate::widgets::popup_select::*;
 
-pub fn main_layout(f: &mut Frame, data: &Data) {
+pub fn main_layout(f: &mut Frame, data: &mut Data) {
     // define areas
     let chunks = Layout::default()
         .direction(Direction::Vertical)
@@ -43,8 +43,10 @@ pub fn main_layout(f: &mut Frame, data: &Data) {
     let content_block= Block::default()
         .title("Content")
         .borders(Borders::ALL);
-    let list = List::new(load_folder()).block(content_block);
-    f.render_widget(list, content_chunks[0]);
+
+    let list = List::new(data.items.clone().get_items()).block(content_block);
+
+    f.render_stateful_widget(list, content_chunks[0], &mut data.items.state);
 
     let help_block= Block::default()
         .title("Commands")
@@ -82,7 +84,7 @@ pub fn main_layout(f: &mut Frame, data: &Data) {
             let mut button_1 = Button::new("File").theme(DARK_BLUE_THEME);
             let mut button_2 = Button::new("Directory").theme(DARK_BLUE_THEME);
 
-            match data.select_index {
+            match data.button_select_index {
                 0 => {
                     button_2 = button_2.state(ButtonState::Unselected);
                     button_1 = button_1.state(ButtonState::Selected);
