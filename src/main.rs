@@ -7,7 +7,7 @@ mod theme;
 use std::{fs, io};
 use std::env::{current_dir, set_current_dir};
 use std::path::Component::ParentDir;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use crossterm::event::{DisableMouseCapture, EnableMouseCapture, Event, KeyCode, KeyEvent, KeyEventKind};
 use crossterm::{event, execute};
 use crossterm::terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen};
@@ -32,7 +32,7 @@ pub enum EntryKind {
 #[derive(Clone, PartialEq, Debug)]
 pub enum Task {
     Idle,
-    Delete,
+    Delete(String),
     Create(EntryKind),
     Load,
     Rename(String, String),
@@ -58,6 +58,16 @@ impl<'a> StateList<'a> {
 
     fn add_item(&mut self, item: ListItem<'a>) {
         self.items.push(item);
+    }
+
+    fn get_selected_item(self, data: &Data) -> PathBuf {
+        fs::read_dir(".")
+            .unwrap()
+            .skip(data.items.state.selected().unwrap())
+            .next()
+            .unwrap()
+            .unwrap()
+            .path()
     }
 
     fn next(&mut self) {
@@ -160,7 +170,7 @@ fn main() {
                                 data.items.next();
                             }
                             key::Right => {
-                                set_current_dir(Path::join(current_dir().unwrap().as_path(), Path::new(&fs::read_dir(".").unwrap().skip(data.items.state.selected().unwrap()).next().unwrap().unwrap().file_name()))).unwrap();
+                                set_current_dir(Path::join(current_dir().unwrap().as_path(), data.items.clone().get_selected_item(&data))).unwrap();
                             }
                             key::Left => {
                                 set_current_dir(ParentDir).unwrap();
@@ -170,8 +180,8 @@ fn main() {
                                 data.task = Create(Pending);
                             }
                             char('d') => {
-                                data.popup_state = PopupState::TextPopup;
-                                data.task = Delete;
+                                // ask if u really want to delete it
+                                data.task = Delete(format!("{:?}", Path::join(current_dir().unwrap().as_path(), data.items.clone().get_selected_item(&data))));
                             }
                             char('r') => {
                                 data.popup_state = PopupState::TextPopup;
