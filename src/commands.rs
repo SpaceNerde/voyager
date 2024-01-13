@@ -34,8 +34,8 @@ pub fn button_select(mut data: Data) -> Data {
 pub fn parse_command(data: Data){
     match data.task {
         Task::Idle => {}
-        Task::Delete => {
-
+        Task::Delete(path) => {
+            println!("{path}")
         }
         Task::Create(ref entry_type) => {
             match entry_type {
